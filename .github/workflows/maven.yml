@@ -15,10 +15,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Set up JDK 8
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v3
         with:
           distribution: 'corretto'
           java-version: 8
+          architecture: 'x64'
       - name: Build with Maven
         run: mvn -B --show-version -ntp --file pom.xml clean package
       - name: Upload the build
@@ -32,10 +33,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Set up JDK 11
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v3
         with:
           distribution: 'corretto'
           java-version: 11
+          architecture: 'x64'
       - name: Build with Maven
         run: mvn -B --show-version -ntp --file pom.xml clean package
 
@@ -44,10 +46,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Set up JDK 17
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v3
         with:
           distribution: 'corretto'
           java-version: 17
+          architecture: 'x64'
       - name: Build with Maven
         run: mvn -B --show-version -ntp --file pom.xml clean package
 
@@ -56,10 +59,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Set up JDK 21
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v3
         with:
           distribution: 'corretto'
           java-version: 21
+          architecture: 'x64'
       - name: Build with Maven
         run: mvn -B --show-version -ntp --file pom.xml clean package
 
@@ -717,10 +721,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Set up JDK 8
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v3
         with:
           distribution: 'corretto'
           java-version: 8
+          architecture: 'x64'
       - name: Enable Developer Command Prompt
         uses: ilammy/msvc-dev-cmd@v1.12.0
       - name: Build with Maven
@@ -736,10 +741,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Set up JDK 11
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v3
         with:
           distribution: 'corretto'
           java-version: 11
+          architecture: 'x64'
       - name: Enable Developer Command Prompt
         uses: ilammy/msvc-dev-cmd@v1.12.0
       - name: Build with Maven
@@ -750,10 +756,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Set up JDK 17
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v3
         with:
           distribution: 'corretto'
           java-version: 17
+          architecture: 'x64'
       - name: Enable Developer Command Prompt
         uses: ilammy/msvc-dev-cmd@v1.12.0
       - name: Build with Maven
@@ -764,10 +771,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Set up JDK 21
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v3
         with:
           distribution: 'corretto'
           java-version: 21
+          architecture: 'x64'
       - name: Enable Developer Command Prompt
         uses: ilammy/msvc-dev-cmd@v1.12.0
       - name: Build with Maven
@@ -778,10 +786,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Set up JDK 8
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v3
         with:
           distribution: 'corretto'
           java-version: 8
+          architecture: 'x64'
       - name: Enable Developer Command Prompt
         uses: ilammy/msvc-dev-cmd@v1.12.0
       - name: Build with Maven
@@ -797,10 +806,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Set up JDK 11
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v3
         with:
           distribution: 'corretto'
           java-version: 11
+          architecture: 'x64'
       - name: Enable Developer Command Prompt
         uses: ilammy/msvc-dev-cmd@v1.12.0
       - name: Build with Maven
@@ -811,10 +821,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Set up JDK 17
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v3
         with:
           distribution: 'corretto'
           java-version: 17
+          architecture: 'x64'
       - name: Enable Developer Command Prompt
         uses: ilammy/msvc-dev-cmd@v1.12.0
       - name: Build with Maven
@@ -825,10 +836,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Set up JDK 21
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v3
         with:
           distribution: 'corretto'
           java-version: 21
+          architecture: 'x64'
       - name: Enable Developer Command Prompt
         uses: ilammy/msvc-dev-cmd@v1.12.0
       - name: Build with Maven
@@ -839,10 +851,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Set up JDK 8
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v3
         with:
           distribution: 'corretto'
           java-version: 8
+          architecture: 'x64'
       - name: Enable Developer Command Prompt
         uses: ilammy/msvc-dev-cmd@v1
         with:
@@ -860,10 +873,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Set up JDK 11
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v3
         with:
           distribution: 'corretto'
           java-version: 11
+          architecture: 'x64'
       - name: Enable Developer Command Prompt
         uses: ilammy/msvc-dev-cmd@v1
         with:
@@ -876,10 +890,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Set up JDK 17
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v3
         with:
           distribution: 'corretto'
           java-version: 17
+          architecture: 'x64'
       - name: Enable Developer Command Prompt
         uses: ilammy/msvc-dev-cmd@v1
         with:
@@ -892,10 +907,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Set up JDK 21
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v3
         with:
           distribution: 'corretto'
           java-version: 21
+          architecture: 'x64'
       - name: Enable Developer Command Prompt
         uses: ilammy/msvc-dev-cmd@v1
         with:
@@ -908,10 +924,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Set up JDK 8
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v3
         with:
           distribution: 'corretto'
           java-version: 8
+          architecture: 'x64'
       - name: Enable Developer Command Prompt
         uses: ilammy/msvc-dev-cmd@v1
         with:
@@ -929,10 +946,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Set up JDK 11
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v3
         with:
           distribution: 'corretto'
           java-version: 11
+          architecture: 'x64'
       - name: Enable Developer Command Prompt
         uses: ilammy/msvc-dev-cmd@v1
         with:
@@ -945,10 +963,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Set up JDK 17
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v3
         with:
           distribution: 'corretto'
           java-version: 17
+          architecture: 'x64'
       - name: Enable Developer Command Prompt
         uses: ilammy/msvc-dev-cmd@v1
         with:
@@ -961,10 +980,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Set up JDK 21
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v3
         with:
           distribution: 'corretto'
           java-version: 21
+          architecture: 'x64'
       - name: Enable Developer Command Prompt
         uses: ilammy/msvc-dev-cmd@v1
         with:
