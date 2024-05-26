@@ -11,17 +11,15 @@ RUN apt-get update -y && \
         g++-i686-linux-gnu && \
     apt-get clean
 
-RUN export java_version=amazon-corretto@1.17 && \
-    export JAVA_VERSION=${java_version} && \
-    curl -sL https://github.com/shyiko/jabba/raw/master/install.sh | JABBA_COMMAND="install $JAVA_VERSION -o /jdk" bash && \
-    echo 'export JAVA_HOME="/jdk"' >> ~/.bashrc && \
-    echo 'PATH=/jdk/bin:$PATH' >> ~/.bashrc
-
-ENV JAVA_HOME "/jdk"
-ENV PATH      "/jdk/bin:$PATH"
-
 RUN mkdir -p /opt
 WORKDIR /opy
+
+RUN wget --no-verbose https://corretto.aws/downloads/latest/amazon-corretto-17-x64-linux-jdk.tar.gz && \
+    mkdir -p /opt/jdk && \
+    tar -xzf amazon-corretto-*-x64-linux-jdk.tar.gz -C /opt/jdk --strip-components 1
+
+ENV JAVA_HOME "/opt/jdk"
+ENV PATH      "/opt/jdk/bin:$PATH"
 
 RUN wget --no-verbose https://maven-central.storage-download.googleapis.com/maven2/org/apache/maven/apache-maven/3.8.7/apache-maven-3.8.7-bin.tar.gz && \
     tar xzf apache-maven-3.8.7-bin.tar.gz && \
@@ -39,8 +37,8 @@ ENV PATH 	"/opt/cmake-3.29.3-linux-x86_64/bin:$PATH"
 RUN mkdir -p /workspace/Brotli4j
 WORKDIR /workspace/Brotli4j
 
-RUN echo "/jdk/lib/amd64" >> /etc/ld.so.conf
-RUN echo "/jdk/jre/lib/amd64/" >> /etc/ld.so.conf
+RUN echo "/opt/jdk/lib/amd64" >> /etc/ld.so.conf
+RUN echo "/opt/jdk/jre/lib/amd64/" >> /etc/ld.so.conf
 
 RUN ldconfig
 
