@@ -123,7 +123,7 @@
             <activation>
                 <os>
                     <family>Linux</family>
-                    <arch>armv</arch>
+                    <arch>arm</arch>
                 </os>
             </activation>
             <modules>
