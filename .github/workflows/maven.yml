@@ -49,7 +49,7 @@ jobs:
         architecture:
           - name: x86_64
             linux_name: x86-64-linux-gnu
-            exec_name: x86-64-linux-gnu
+            exec_name: x86_64-linux-gnu
           - name: x86
             linux_name: i686-linux-gnu
             exec_name: i686-linux-gnu
