@@ -49,18 +49,25 @@ jobs:
         architecture:
           - name: x86_64
             linux_name: x86-64-linux-gnu
+            exec_name: x86-64-linux-gnu
           - name: x86
             linux_name: i686-linux-gnu
+            exec_name: i686-linux-gnu
           - name: aarch64
             linux_name: aarch64-linux-gnu
+            exec_name: aarch64-linux-gnu
           - name: armv7
             linux_name: arm-linux-gnueabi
+            exec_name: arm-linux-gnueabi
           - name: ppc64le
             linux_name: powerpc64le-linux-gnu
+            exec_name: powerpc64le-linux-gnu
           - name: riscv64
             linux_name: riscv64-linux-gnu
+            exec_name: riscv64-linux-gnu
           - name: s390x
             linux_name: s390x-linux-gnu
+            exec_name: s390x-linux-gnu
         java_version: [ 8,11,17,21 ]
 
     name: Linux-${{ matrix.architecture.name }}-Build-JDK${{ matrix.java_version }}
@@ -78,7 +85,10 @@ jobs:
           architecture: 'x64'
 
       - name: Install GCC
-        run: sudo apt-get install -y gcc-${{ matrix.architecture.linux_name }} g++-${{ matrix.architecture.linux_name }}
+        run: |
+          sudo apt-get install -y gcc-${{ matrix.architecture.linux_name }} g++-${{ matrix.architecture.linux_name }}
+          sudo update-alternatives --install /usr/bin/cc cc /usr/bin/${{ matrix.architecture.exec_name}}-gcc 200
+          sudo update-alternatives --install /usr/bin/c++ c++ /usr/bin/${{ matrix.architecture.exec_name}}-g++ 200
 
       - name: Build
         run: mvn -B -V -ntp --file pom.xml -P linux-${{ matrix.architecture.name }} clean package
