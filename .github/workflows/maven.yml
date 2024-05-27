@@ -33,6 +33,7 @@ jobs:
         run: mvn -B -V -ntp --file pom.xml clean package
 
       - name: Upload build
+        if: ${{ matrix.java_version == 8 }}
         uses: actions/upload-artifact@v4
         with:
           name: MacOS-x86_64-Build-JDK${{ matrix.java_version }}
@@ -64,6 +65,7 @@ jobs:
       - name: Build
         run: mvn -B -V -ntp --file pom.xml clean package
       - name: Upload build
+        if: ${{ matrix.java_version == 8 }}
         uses: actions/upload-artifact@v4
         with:
           name: Linux-${{ matrix.architecture }}-Build-JDK${{ matrix.java_version }}
@@ -107,6 +109,7 @@ jobs:
         run: mvn -B -V -ntp --file pom.xml clean package
 
       - name: Upload build
+        if: ${{ matrix.java_version == 8 }}
         uses: actions/upload-artifact@v4
         with:
           name: Windows-${{ matrix.architecture.name }}-Build-JDK${{ matrix.java_version }}
