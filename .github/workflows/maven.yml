@@ -31,6 +31,7 @@ jobs:
           distribution: 'corretto'
           java-version: ${{ matrix.java_version }}
           architecture: 'x64'
+          check-latest: true
 
       - name: Build
         run: mvn -B -V -ntp --file pom.xml -P osx-${{ matrix.architecture.name }} clean package
@@ -40,6 +41,7 @@ jobs:
         with:
           name: OSX-${{ matrix.architecture.name }}-Build-JDK${{ matrix.java_version }}
           path: .
+          compression-level: 9
 
   Linux-Build:
     strategy:
@@ -82,6 +84,7 @@ jobs:
           distribution: 'corretto'
           java-version: ${{ matrix.java_version }}
           architecture: 'x64'
+          check-latest: true
 
       - name: Install GCC
         run: |
@@ -97,6 +100,7 @@ jobs:
         with:
           name: Linux-${{ matrix.architecture.name }}-Build-JDK${{ matrix.java_version }}
           path: .
+          compression-level: 9
 
   Windows-Build:
     strategy:
@@ -126,6 +130,7 @@ jobs:
           distribution: 'corretto'
           java-version: ${{ matrix.java_version }}
           architecture: 'x64'
+          check-latest: true
 
       - name: Enable compiler
         uses: ilammy/msvc-dev-cmd@v1
@@ -140,6 +145,7 @@ jobs:
         with:
           name: Windows-${{ matrix.architecture.name }}-Build-JDK${{ matrix.java_version }}
           path: .
+          compression-level: 9
 
   Complete-Build:
     strategy:
@@ -161,6 +167,7 @@ jobs:
           distribution: 'corretto'
           java-version: ${{ matrix.java_version }}
           architecture: 'x64'
+          check-latest: true
 
       - name: Download builds
         uses: actions/download-artifact@v4
@@ -188,3 +195,4 @@ jobs:
         with:
           name: Complete-Build-JDK${{ matrix.java_version }}
           path: .
+          compression-level: 9
