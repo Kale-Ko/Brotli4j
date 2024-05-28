@@ -176,7 +176,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           pattern: "*-JDK${{ matrix.java_version }}"
-          path: /tmp/builds
+          path: builds
           merge-multiple: false
           run-id: 9265118958
           github-token: ${{ secrets.GH_TOKEN }}
@@ -184,15 +184,9 @@ jobs:
       - name: Copy builds
         run: |
           export OUT=$PWD
-          export paths=($(find /tmp/builds/*/natives/ -type d -name "target" | grep -oiP '(.*)\/([^-]*-[^-]*)-Build-JDK([0-9]*)\/natives\/\2\/target'))
-          export rootPaths=($(find /tmp/builds/*/natives/ -type d -name "target" | grep -oiP '(.*)\/([^-]*-[^-]*)-Build-JDK([0-9]*)(?=\/natives\/\2\/target)'))
-          echo "rootPaths $rootPaths"
-          echo "rootPaths[@] ${rootPaths[@]}"
-          echo "!rootPaths[@] ${!rootPaths[@]}"
+          export paths=($(find builds/*/natives/ -type d -name "target" | grep -oiP '(.*)\/([^-]*-[^-]*)-Build-JDK([0-9]*)\/natives\/\2\/target'))
+          export rootPaths=($(find builds/*/natives/ -type d -name "target" | grep -oiP '(.*)\/([^-]*-[^-]*)-Build-JDK([0-9]*)(?=\/natives\/\2\/target)'))
           for i in "${!paths[@]}"; do
-            echo "i $i"
-            echo "paths[$i] ${paths[$i]}"
-            echo "rootPaths[$i] ${rootPaths[$i]}"
             cd "${rootPaths[$i]}"
             cp -r --parent "${paths[$i]}" $OUT
           done
@@ -201,7 +195,6 @@ jobs:
         run: mvn -B -V -ntp --file pom.xml -P release package
 
       - name: Upload build
-        if: ${{ matrix.java_version == 8 }}
         uses: actions/upload-artifact@v4
         with:
           name: Complete-Build-JDK${{ matrix.java_version }}
