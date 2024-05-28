@@ -176,19 +176,27 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           pattern: "*-JDK${{ matrix.java_version }}"
-          path: builds
+          path: builds/
           merge-multiple: false
           run-id: 9265118958
           github-token: ${{ secrets.GH_TOKEN }}
 
       - name: Copy builds
+        shell: /usr/bin/bash -vx -e {0}
         run: |
-          export OUT=$PWD
-          export paths=($(find builds/*/natives/ -type d -name "target" | grep -oiP '(.*)\/([^-]*-[^-]*)-Build-JDK([0-9]*)\/natives\/\2\/target'))
-          export rootPaths=($(find builds/*/natives/ -type d -name "target" | grep -oiP '(.*)\/([^-]*-[^-]*)-Build-JDK([0-9]*)(?=\/natives\/\2\/target)'))
+          OUT=$PWD
+          rootPaths=($(find ./builds/*/natives/ -type d -name "target" | grep -oiP '(.*)\/([^-]*-[^-]*)-Build-JDK([0-9]*)(?=\/natives\/\2\/target)'))
+          paths=($(find ./builds/*/natives/ -type d -name "target" | grep -oiP '(?:(.*)\/([^-]*-[^-]*)-Build-JDK([0-9]*)\/)natives\/\2\/target'))
           for i in "${!paths[@]}"; do
-            cd "${rootPaths[$i]}"
-            cp -r --parent "${paths[$i]}" $OUT
+            rootPath="${rootPaths[$i]}"
+            rootPathLen="${#rootPath}"
+            path="${paths[$i]}"
+            
+            cd $rootPath
+            path=.${path:rootPathLen:256}
+            
+            cp -r --parent $path $OUT
+            cd $OUT
           done
 
       - name: Build
