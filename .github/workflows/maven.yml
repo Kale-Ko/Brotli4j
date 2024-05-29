@@ -10,7 +10,7 @@ on:
 
 jobs:
   Linux-Build:
-    if: false
+#    if: false
     strategy:
       fail-fast: true
       matrix:
@@ -216,31 +216,45 @@ jobs:
           - name: x86_64
             java_distro: 'temurin'
             java_name: x64
+            linux_name: amd64
             qemu_name: amd64
+            docker_name: linux/amd64
           - name: x86
             java_distro: 'liberica'
             java_name: x86
+            linux_name: i386
             qemu_name: i386
+            docker_name: linux/i386
           - name: aarch64
             java_distro: 'temurin'
             java_name: aarch64
+            linux_name: arm64
             qemu_name: aarch64
+            docker_name: linux/aarch64
           - name: armv7
             java_distro: 'liberica'
             java_name: arm
+            linux_name: armel
             qemu_name: arm
+            docker_name: linux/arm/v7
           - name: ppc64le
             java_distro: 'temurin'
             java_name: ppc64le
+            linux_name: ppc64el
             qemu_name: ppc64le
+            docker_name: linux/ppc64le
           - name: riscv64
             java_distro: 'temurin'
             java_name: riscv64
+            linux_name: riscv64
             qemu_name: riscv64
+            docker_name: linux/riscv64
           - name: s390x
             java_distro: 'temurin'
             java_name: s390x
+            linux_name: s390x
             qemu_name: s390x
+            docker_name: linux/s390x
         java_version: [ 8, 11, 17, 21 ]
 
         exclude:
@@ -256,13 +270,23 @@ jobs:
           - architecture:
               name: riscv64
             java_version: 11
-#    needs: Linux-Build
+    needs: Linux-Build
 
     name: Linux-${{ matrix.architecture.name }}-Test-JDK${{ matrix.java_version }}
     runs-on: ubuntu-latest
 
     steps:
-      - name: Set up QEMU
+      - name: Setup Dependencies
+        shell: /usr/bin/bash -vx -e {0}
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y apt-file libc6 libc6-${{ matrix.architecture.linux_name }}-cross
+          sudo apt-file update
+          libfile=$(sudo apt-file list libc6-${{ matrix.architecture.linux_name }}-cross | grep -oP "/(?:.*)/lib/ld-linux(?:.*)")
+          libfile2=$(sudo apt-file list libc6-${{ matrix.architecture.linux_name }}-cross | grep -oP "/(?:.*)/lib/ld64(?:.*)")
+          sudo cp $libfile /lib/ || sudo cp $libfile2 /lib/
+
+      - name: Setup QEMU
         uses: docker/setup-qemu-action@v3
         with:
           platforms: ${{ matrix.architecture.qemu_name }}
@@ -275,11 +299,22 @@ jobs:
           architecture: ${{ matrix.architecture.java_name }}
           check-latest: true
 
-#      - name: Download build
-#        uses: actions/download-artifact@v4
-#        with:
-#          name: Linux-${{ matrix.architecture.name }}-Build-JDK${{ matrix.java_version }}
-#          path: .
+      - name: Download build
+        uses: actions/download-artifact@v4
+        with:
+          name: Linux-${{ matrix.architecture.name }}-Build-JDK${{ matrix.java_version }}
+          path: .
+#          run-id: 9284818738
+#          github-token: ${{ secrets.GH_TOKEN }}
 
-#      - name: Test
-#        run: mvn -B -V -ntp --file pom.xml -P release -Dmaven.test.skip=false test
+      - name: Test
+        run: |
+          docker build \
+            --platform ${{ matrix.architecture.docker_name }} \
+            --tag brotli4j-test \
+            docker/
+          docker run --rm \
+            --platform ${{ matrix.architecture.docker_name }} \
+            --volume "$JAVA_HOME:/opt/java" \
+            brotli4j-test \
+            mvn -B -V -ntp --file pom.xml -P release -Dmaven.test.skip=false test
