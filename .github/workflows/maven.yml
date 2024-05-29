@@ -10,7 +10,7 @@ on:
 
 jobs:
   Linux-Build:
-#    if: false
+    if: false
     strategy:
       fail-fast: true
       matrix:
@@ -270,26 +270,17 @@ jobs:
           - architecture:
               name: riscv64
             java_version: 11
-    needs: Linux-Build
+#    needs: Linux-Build
 
     name: Linux-${{ matrix.architecture.name }}-Test-JDK${{ matrix.java_version }}
     runs-on: ubuntu-latest
 
     steps:
-      - name: Setup Dependencies
+      - name: Setup QEMU
         shell: /usr/bin/bash -vx -e {0}
         run: |
           sudo apt-get update -y
-          sudo apt-get install -y apt-file libc6 libc6-${{ matrix.architecture.linux_name }}-cross
-          sudo apt-file update
-          libfile=$(sudo apt-file list libc6-${{ matrix.architecture.linux_name }}-cross | grep -oP "/(?:.*)/lib/ld-linux(?:.*)")
-          libfile2=$(sudo apt-file list libc6-${{ matrix.architecture.linux_name }}-cross | grep -oP "/(?:.*)/lib/ld64(?:.*)")
-          sudo cp $libfile /lib/ || sudo cp $libfile2 /lib/
-
-      - name: Setup QEMU
-        uses: docker/setup-qemu-action@v3
-        with:
-          platforms: ${{ matrix.architecture.qemu_name }}
+          sudo apt-get install -y qemu-system-${{ matrix.architecture.qemu_name }} qemu-user qemu-utils
 
       - name: Setup JDK
         uses: actions/setup-java@v4
@@ -304,17 +295,21 @@ jobs:
         with:
           name: Linux-${{ matrix.architecture.name }}-Build-JDK${{ matrix.java_version }}
           path: .
-#          run-id: 9284818738
-#          github-token: ${{ secrets.GH_TOKEN }}
+          run-id: 9285337849
+          github-token: ${{ secrets.GH_TOKEN }}
 
       - name: Test
         run: |
-          docker build \
-            --platform ${{ matrix.architecture.docker_name }} \
-            --tag brotli4j-test \
-            docker/
-          docker run --rm \
-            --platform ${{ matrix.architecture.docker_name }} \
-            --volume "$JAVA_HOME:/opt/java" \
-            brotli4j-test \
-            mvn -B -V -ntp --file pom.xml -P release -Dmaven.test.skip=false test
+          qemu-${{ matrix.architecture.qemu_name }} -E JAVA_HOME=$JAVA_HOME $(which bash) -c mvn -B -V -ntp --file pom.xml -P release -Dmaven.test.skip=false test
+
+#      - name: Test
+#        run: |
+#          docker build \
+#            --platform ${{ matrix.architecture.docker_name }} \
+#            --tag brotli4j-test \
+#            docker/
+#          docker run --rm \
+#            --platform ${{ matrix.architecture.docker_name }} \
+#            --volume "$JAVA_HOME:/opt/java" \
+#            brotli4j-test \
+#
