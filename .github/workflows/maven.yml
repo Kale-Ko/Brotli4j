@@ -10,6 +10,7 @@ on:
 
 jobs:
   Linux-Build:
+    if: false
     strategy:
       fail-fast: true
       matrix:
@@ -69,6 +70,7 @@ jobs:
           compression-level: 9
 
   Windows-Build:
+    if: false
     strategy:
       fail-fast: true
       matrix:
@@ -114,6 +116,7 @@ jobs:
           compression-level: 9
 
   OSX-Build:
+    if: false
     strategy:
       fail-fast: true
       matrix:
@@ -148,6 +151,7 @@ jobs:
           compression-level: 9
 
   Complete-Build:
+    if: false
     strategy:
       fail-fast: true
       matrix:
@@ -214,7 +218,7 @@ jobs:
             java_name: x64
             qemu_name: amd64
           - name: x86
-            java_distro: 'temurin'
+            java_distro: 'liberica'
             java_name: x86
             qemu_name: i386
           - name: aarch64
@@ -222,7 +226,7 @@ jobs:
             java_name: aarch64
             qemu_name: aarch64
           - name: armv7
-            java_distro: 'temurin'
+            java_distro: 'liberica'
             java_name: arm
             qemu_name: arm
           - name: ppc64le
@@ -241,8 +245,8 @@ jobs:
 
         exclude:
           - architecture:
-              name: arm
-            java_version: 21
+              name: armv7
+            java_version: 8
           - architecture:
               name: s390x
             java_version: 8
@@ -252,7 +256,7 @@ jobs:
           - architecture:
               name: riscv64
             java_version: 11
-    needs: Linux-Build
+#    needs: Linux-Build
 
     name: Linux-${{ matrix.architecture.name }}-Test-JDK${{ matrix.java_version }}
     runs-on: ubuntu-latest
