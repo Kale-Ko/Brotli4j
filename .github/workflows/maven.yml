@@ -294,14 +294,14 @@ jobs:
         run: |
           sudo dpkg --add-architecture ${{ matrix.architecture.linux_name }}
           sudo rm /etc/apt/sources.list
-          if [[ ${{ matrix.architecture.linux_name }} == "amd64" ]]; then
-              echo "deb [arch=amd64] http://azure.archive.ubuntu.com/ubuntu/ $(lsb_release -sc) main restricted universe multiverse" | sudo tee /etc/apt/sources.list.d/ubuntu.list
-              echo "deb [arch=amd64] http://azure.archive.ubuntu.com/ubuntu/ $(lsb_release -sc)-updates main restricted universe multiverse" | sudo tee /etc/apt/sources.list.d/ubuntu-updates.list
-              echo "deb [arch=amd64] http://azure.archive.ubuntu.com/ubuntu/ $(lsb_release -sc)-security main restricted universe multiverse" | sudo tee /etc/apt/sources.list.d/ubuntu-security.list
-          elif [[ ${{ matrix.architecture.is_ports }} != true ]]; then
+          if [[ ${{ matrix.architecture.is_ports }} != true ]]; then
               echo "deb [arch=amd64,${{ matrix.architecture.linux_name }}] http://azure.archive.ubuntu.com/ubuntu/ $(lsb_release -sc) main restricted universe multiverse" | sudo tee /etc/apt/sources.list.d/ubuntu.list
               echo "deb [arch=amd64,${{ matrix.architecture.linux_name }}] http://azure.archive.ubuntu.com/ubuntu/ $(lsb_release -sc)-updates main restricted universe multiverse" | sudo tee /etc/apt/sources.list.d/ubuntu-updates.list
               echo "deb [arch=amd64,${{ matrix.architecture.linux_name }}] http://azure.archive.ubuntu.com/ubuntu/ $(lsb_release -sc)-security main restricted universe multiverse" | sudo tee /etc/apt/sources.list.d/ubuntu-security.list          
+          else
+              echo "deb [arch=amd64] http://azure.archive.ubuntu.com/ubuntu/ $(lsb_release -sc) main restricted universe multiverse" | sudo tee /etc/apt/sources.list.d/ubuntu.list
+              echo "deb [arch=amd64] http://azure.archive.ubuntu.com/ubuntu/ $(lsb_release -sc)-updates main restricted universe multiverse" | sudo tee /etc/apt/sources.list.d/ubuntu-updates.list
+              echo "deb [arch=amd64] http://azure.archive.ubuntu.com/ubuntu/ $(lsb_release -sc)-security main restricted universe multiverse" | sudo tee /etc/apt/sources.list.d/ubuntu-security.list
           fi
           if [[ ${{ matrix.architecture.is_ports}} == true ]]; then
               echo "deb [arch=${{ matrix.architecture.linux_name  }}] http://azure.ports.ubuntu.com/ubuntu-ports/ $(lsb_release -sc) main restricted universe multiverse" | sudo tee /etc/apt/sources.list.d/ubuntu-ports.list
@@ -311,13 +311,13 @@ jobs:
           sudo apt-get update -y
           sudo apt-get --fix-broken install
 
-          sudo apt-get install -y qemu-system-${{ matrix.architecture.qemu_package_name }} qemu-user
+          sudo apt-get install -y qemu-system-${{ matrix.architecture.qemu_package_name }}:amd64 qemu-user:amd64
           
-          sudo apt-get install -y apt-file libc6 libc6-${{ matrix.architecture.linux_name }}-cross
-          sudo apt-file update
-          libfile=$(echo $(sudo apt-file list libc6-${{ matrix.architecture.linux_name }}-cross | grep -oP "/(?:.*)/lib/ld-linux(?:.*)"))
-          libfile2=$(echo $(sudo apt-file list libc6-${{ matrix.architecture.linux_name }}-cross | grep -oP "/(?:.*)/lib/ld64(?:.*)"))
-          sudo cp "$libfile$libfile2" /lib
+          sudo apt-get install -y apt-file:amd64 libc6:amd64 libc6:${{ matrix.architecture.linux_name }} libtinfo6:${{ matrix.architecture.linux_name }}
+          # sudoo apt-file update
+          # libfile=$(echo $(sudo apt-file list libc6-${{ matrix.architecture.linux_name }}-cross | grep -oP "/(?:.*)/lib/ld-linux(?:.*)"))
+          # libfile2=$(echo $(sudo apt-file list libc6-${{ matrix.architecture.linux_name }}-cross | grep -oP "/(?:.*)/lib/ld64(?:.*)"))
+          # sudo cp "$libfile$libfile2" /lib
 
           cd /opt
           sudo apt-get download bash:${{ matrix.architecture.linux_name }}
@@ -344,4 +344,4 @@ jobs:
 
       - name: Test
         run: |
-          qemu-${{ matrix.architecture.qemu_name }} /opt/bash -c $(which mvn) -B -V -ntp --file pom.xml -P release package test
+          qemu-${{ matrix.architecture.qemu_name }} /opt/bash -c "$(which mvn) -B -V -ntp --file pom.xml -P release test"
