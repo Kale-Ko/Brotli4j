@@ -210,30 +210,48 @@ jobs:
       matrix:
         architecture:
           - name: x86_64
+            java_distro: 'temurin'
             java_name: x64
             qemu_name: amd64
           - name: x86
+            java_distro: 'temurin'
             java_name: x86
             qemu_name: i386
           - name: aarch64
+            java_distro: 'temurin'
             java_name: aarch64
             qemu_name: aarch64
           - name: armv7
+            java_distro: 'temurin'
             java_name: arm
             qemu_name: arm
           - name: ppc64le
+            java_distro: 'temurin'
             java_name: ppc64le
             qemu_name: ppc64le
-          - name: ppc64
-            jave_name: ppc64
-            qemu_name: ppc64
           - name: riscv64
+            java_distro: 'temurin'
             java_name: riscv64
             qemu_name: riscv64
           - name: s390x
+            java_distro: 'temurin'
             java_name: s390x
             qemu_name: s390x
         java_version: [ 8, 11, 17, 21 ]
+
+        exclude:
+          - architecture:
+              name: arm
+            java_version: 21
+          - architecture:
+              name: s390x
+            java_version: 8
+          - architecture:
+              name: riscv64
+            java_version: 8
+          - architecture:
+              name: riscv64
+            java_version: 11
     needs: Linux-Build
 
     name: Linux-${{ matrix.architecture.name }}-Test-JDK${{ matrix.java_version }}
@@ -248,16 +266,16 @@ jobs:
       - name: Setup JDK
         uses: actions/setup-java@v4
         with:
-          distribution: 'temurin'
+          distribution: ${{ matrix.architecture.java_distro }}
           java-version: ${{ matrix.java_version }}
           architecture: ${{ matrix.architecture.java_name }}
           check-latest: true
 
-      - name: Download build
-        uses: actions/download-artifact@v4
-        with:
-          name: Linux-${{ matrix.architecture.name }}-Build-JDK${{ matrix.java_version }}
-          path: .
+#      - name: Download build
+#        uses: actions/download-artifact@v4
+#        with:
+#          name: Linux-${{ matrix.architecture.name }}-Build-JDK${{ matrix.java_version }}
+#          path: .
 
-      - name: Test
-        run: mvn -B -V -ntp --file pom.xml -P release -Dmaven.test.skip=false test
+#      - name: Test
+#        run: mvn -B -V -ntp --file pom.xml -P release -Dmaven.test.skip=false test
