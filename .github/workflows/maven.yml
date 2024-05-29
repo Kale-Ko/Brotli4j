@@ -11,7 +11,7 @@ on:
 jobs:
   Linux-Build:
     strategy:
-      fail-fast: true
+      fail-fast: false
       matrix:
         architecture:
           - name: x86_64
@@ -70,7 +70,7 @@ jobs:
 
   Windows-Build:
     strategy:
-      fail-fast: true
+      fail-fast: false
       matrix:
         architecture:
           - name: x86_64
@@ -115,7 +115,7 @@ jobs:
 
   OSX-Build:
     strategy:
-      fail-fast: true
+      fail-fast: false
       matrix:
         architecture:
           - name: x86_64
@@ -149,7 +149,7 @@ jobs:
 
   Complete-Build:
     strategy:
-      fail-fast: true
+      fail-fast: false
       matrix:
         java_version: [ 8, 11, 17, 21 ]
     needs: [ Linux-Build, Windows-Build, OSX-Build ]
@@ -203,3 +203,69 @@ jobs:
           name: Complete-Build-JDK${{ matrix.java_version }}
           path: .
           compression-level: 9
+
+  Linux-Test:
+    strategy:
+      fail-fast: false
+      matrix:
+        architecture:
+          - name: x86_64
+            java_name: x64
+            qemu_name: amd64
+          - name: x86
+            java_name: x86
+            qemu_name: i386
+          - name: aarch64
+            java_name: aarch64
+            qemu_name: aarch64
+          - name: armv7
+            java_name: arm
+            qemu_name: arm
+          - name: ppc64le
+            java_name: ppc64le
+            qemu_name: ppc64le
+          - name: ppc64
+            jave_name: ppc64
+            qemu_name: ppc64
+          - name: riscv64
+            java_name: riscv64
+            qemu_name: riscv64
+          - name: s390x
+            java_name: s390x
+            qemu_name: s390x
+        java_version: [ 8, 11, 17, 21 ]
+    needs: Linux-Build
+
+    name: Linux-${{ matrix.architecture.name }}-Test-JDK${{ matrix.java_version }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Setup JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'corretto'
+          java-version: ${{ matrix.java_version }}
+          architecture: ${{ matrix.architecture.java_name }}
+          check-latest: true
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+        with:
+          platforms: ${{ matrix.architecture.qemu_name }}
+
+      - name: Setup JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'corretto'
+          java-version: ${{ matrix.java_version }}
+          architecture: ${{ matrix.architecture.java_name }}
+          check-latest: true
+
+      - name: Download build
+        uses: actions/download-artifact@v4
+        with:
+          name: Linux-${{ matrix.architecture.name }}-Build-JDK${{ matrix.java_version }}
+          path: .
+
+      - name: Test
+        run: mvn -B -V -ntp --file pom.xml -P release -Dmaven.test.skip=false test
