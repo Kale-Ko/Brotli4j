@@ -309,16 +309,15 @@ jobs:
               echo "deb [arch=${{ matrix.architecture.linux_name }}] http://azure.ports.ubuntu.com/ubuntu-ports/ $(lsb_release -sc)-security main restricted universe multiverse" | sudo tee /etc/apt/sources.list.d/ubuntu-ports-security.list
           fi
           sudo apt-get update -y
-          sudo apt-get install -y --fix-broken
+          sudo apt-get --fix-broken install
 
           sudo apt-get install -y qemu-system-${{ matrix.architecture.qemu_package_name }} qemu-user
           
           sudo apt-get install -y apt-file libc6 libc6-${{ matrix.architecture.linux_name }}-cross
           sudo apt-file update
-          libfile=$(sudo apt-file list libc6-${{ matrix.architecture.linux_name }}-cross | grep -oP "/(?:.*)/lib/ld-linux(?:.*)")
-          libfile2=$(sudo apt-file list libc6-${{ matrix.architecture.linux_name }}-cross | grep -oP "/(?:.*)/lib/ld64(?:.*)")
-          echo $libfile $libfile2
-          cp "$libfile $libfile2" /lib
+          libfile=$(echo $(sudo apt-file list libc6-${{ matrix.architecture.linux_name }}-cross | grep -oP "/(?:.*)/lib/ld-linux(?:.*)"))
+          libfile2=$(echo $(sudo apt-file list libc6-${{ matrix.architecture.linux_name }}-cross | grep -oP "/(?:.*)/lib/ld64(?:.*)"))
+          sudo cp "$libfile$libfile2" /lib
 
           cd /opt
           sudo apt-get download bash:${{ matrix.architecture.linux_name }}
