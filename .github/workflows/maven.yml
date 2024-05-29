@@ -344,4 +344,4 @@ jobs:
 
       - name: Test
         run: |
-          qemu-${{ matrix.architecture.qemu_name }} /opt/bash -c $(which mvn) -B -V -ntp --file pom.xml -P release -Dmaven.test.skip=false test
+          qemu-${{ matrix.architecture.qemu_name }} /opt/bash -c $(which mvn) -B -V -ntp --file pom.xml -P release package test
