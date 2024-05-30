@@ -69,11 +69,15 @@ public class Brotli4jLoader {
                         }
                     }
 
+                    System.out.println(platform);
+
                     if (platform == null) {
                         throw new UnsatisfiedLinkError("Failed to find valid Brotli native library in classpath.");
                     }
 
                     String libPath = "/lib/" + platform + '/' + nativeLibName;
+
+                    System.out.println(libPath);
 
                     // Copy the native library to a temporary file and load it
                     try (InputStream in = loaderClassToUse.getResourceAsStream(libPath)) {
@@ -84,6 +88,7 @@ public class Brotli4jLoader {
                         }
 
                         Files.copy(in, tempFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+
                         System.load(tempFile.getAbsolutePath());
                     } finally {
                         tempFile.deleteOnExit();

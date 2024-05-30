@@ -10,7 +10,6 @@ on:
 
 jobs:
   Linux-Build:
-    if: false
     strategy:
       fail-fast: true
       matrix:
@@ -70,7 +69,6 @@ jobs:
           compression-level: 9
 
   Windows-Build:
-    if: false
     strategy:
       fail-fast: true
       matrix:
@@ -116,7 +114,6 @@ jobs:
           compression-level: 9
 
   OSX-Build:
-    if: false
     strategy:
       fail-fast: true
       matrix:
@@ -151,7 +148,6 @@ jobs:
           compression-level: 9
 
   Complete-Build:
-    if: false
     strategy:
       fail-fast: true
       matrix:
@@ -284,7 +280,7 @@ jobs:
           - architecture:
               name: riscv64
             java_version: 11
-#    needs: Linux-Build
+    needs: Linux-Build
 
     name: Linux-${{ matrix.architecture.name }}-Test-JDK${{ matrix.java_version }}
     runs-on: ubuntu-latest
