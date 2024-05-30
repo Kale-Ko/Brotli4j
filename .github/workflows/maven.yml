@@ -10,7 +10,7 @@ on:
 
 jobs:
   Linux-Build:
-    if: false
+#    if: false
     strategy:
       fail-fast: true
       matrix:
@@ -275,6 +275,10 @@ jobs:
           - architecture:
               name: armv7
               java_distro: 'temurin'
+            java_version: 17
+          - architecture:
+              name: armv7
+              java_distro: 'temurin'
             java_version: 21
           - architecture:
               name: s390x
@@ -288,7 +292,7 @@ jobs:
               name: riscv64
               java_distro: 'temurin'
             java_version: 11
-#    needs: Linux-Build
+    needs: Linux-Build
 
     name: Linux-${{ matrix.architecture.name }}-Test-JDK${{ matrix.java_version }}
     runs-on: ${{ matrix.architecture.runs_on }}
@@ -351,8 +355,6 @@ jobs:
         with:
           name: Linux-${{ matrix.architecture.name }}-Build-JDK${{ matrix.java_version }}
           path: .
-          run-id: 9309101281
-          github-token: ${{ secrets.GH_TOKEN }}
 
       - name: Test
         env:
