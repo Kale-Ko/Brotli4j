@@ -66,7 +66,7 @@
             <activation>
                 <os>
                     <family>Linux</family>
-                    <arch>i386</arch> <!-- TODO Check value on a real system-->
+                    <arch>i386</arch>
                 </os>
             </activation>
             <dependencies>
@@ -127,24 +127,6 @@
                 <dependency>
                     <groupId>com.aayushatharva.brotli4j</groupId>
                     <artifactId>native-linux-ppc64le</artifactId>
-                    <version>${project.parent.version}</version>
-                    <scope>provided</scope>
-                </dependency>
-            </dependencies>
-        </profile>
-
-        <profile>
-            <id>linux-ppc64</id>
-            <activation>
-                <os>
-                    <family>Linux</family>
-                    <arch>ppc64</arch> <!-- TODO Check value on a real system-->
-                </os>
-            </activation>
-            <dependencies>
-                <dependency>
-                    <groupId>com.aayushatharva.brotli4j</groupId>
-                    <artifactId>native-linux-ppc64</artifactId>
                     <version>${project.parent.version}</version>
                     <scope>provided</scope>
                 </dependency>

@@ -331,8 +331,6 @@ jobs:
         with:
           name: Linux-${{ matrix.architecture.name }}-Build-JDK${{ matrix.java_version }}
           path: .
-          run-id: 9285337849
-          github-token: ${{ secrets.GH_TOKEN }}
 
       - name: Test
         run: |
