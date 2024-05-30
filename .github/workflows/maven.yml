@@ -24,8 +24,8 @@ jobs:
             linux_name: aarch64-linux-gnu
             exec_name: aarch64-linux-gnu
           - name: armv7
-            linux_name: arm-linux-gnueabi
-            exec_name: arm-linux-gnueabi
+            linux_name: arm-linux-gnueabihf
+            exec_name: arm-linux-gnueabihf
           - name: ppc64le
             linux_name: powerpc64le-linux-gnu
             exec_name: powerpc64le-linux-gnu
@@ -216,7 +216,6 @@ jobs:
             is_ports: false
             qemu_package_name: x86
             qemu_name: x86_64
-            docker_name: linux/amd64
           - name: x86
             java_distro: 'liberica'
             java_name: x86
@@ -224,7 +223,6 @@ jobs:
             is_ports: false
             qemu_package_name: x86
             qemu_name: i386
-            docker_name: linux/i386
           - name: aarch64
             java_distro: 'temurin'
             java_name: aarch64
@@ -232,23 +230,20 @@ jobs:
             is_ports: true
             qemu_package_name: arm
             qemu_name: aarch64
-            docker_name: linux/aarch64
           - name: armv7
             java_distro: 'liberica'
             java_name: arm
             linux_name: armhf
             is_ports: true
             qemu_package_name: arm
-            qemu_name: arm
-            docker_name: linux/arm/v7
+            qemu_name: armhf
           - name: ppc64le
             java_distro: 'temurin'
             java_name: ppc64le
             linux_name: ppc64el
             is_ports: true
             qemu_package_name: ppc
-            qemu_name: ppc64le
-            docker_name: linux/ppc64le
+            qemu_name: ppc64el
           - name: riscv64
             java_distro: 'temurin'
             java_name: riscv64
@@ -256,7 +251,6 @@ jobs:
             is_ports: true
             qemu_package_name: misc
             qemu_name: riscv64
-            docker_name: linux/riscv64
           - name: s390x
             java_distro: 'temurin'
             java_name: s390x
@@ -264,7 +258,6 @@ jobs:
             is_ports: true
             qemu_package_name: misc
             qemu_name: s390x
-            docker_name: linux/s390x
         java_version: [ 8, 11, 17, 21 ]
 
         exclude:
