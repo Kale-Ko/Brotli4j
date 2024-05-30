@@ -10,6 +10,7 @@ on:
 
 jobs:
   Linux-Build:
+    if: false
     strategy:
       fail-fast: true
       matrix:
@@ -69,6 +70,7 @@ jobs:
           compression-level: 9
 
   Windows-Build:
+    if: false
     strategy:
       fail-fast: true
       matrix:
@@ -114,6 +116,7 @@ jobs:
           compression-level: 9
 
   OSX-Build:
+    if: false
     strategy:
       fail-fast: true
       matrix:
@@ -148,6 +151,7 @@ jobs:
           compression-level: 9
 
   Complete-Build:
+    if: false
     strategy:
       fail-fast: true
       matrix:
@@ -284,7 +288,7 @@ jobs:
           - architecture:
               name: riscv64
             java_version: 11
-    needs: Linux-Build
+#    needs: Linux-Build
 
     name: Linux-${{ matrix.architecture.name }}-Test-JDK${{ matrix.java_version }}
     runs-on: ubuntu-latest
@@ -295,18 +299,18 @@ jobs:
           sudo dpkg --add-architecture ${{ matrix.architecture.linux_name }}
           sudo rm /etc/apt/sources.list
           if [[ ${{ matrix.architecture.is_ports }} != true ]]; then
-              echo "deb [arch=amd64,${{ matrix.architecture.linux_name }}] http://azure.archive.ubuntu.com/ubuntu/ $(lsb_release -sc) main restricted universe multiverse" | sudo tee /etc/apt/sources.list.d/ubuntu.list
-              echo "deb [arch=amd64,${{ matrix.architecture.linux_name }}] http://azure.archive.ubuntu.com/ubuntu/ $(lsb_release -sc)-updates main restricted universe multiverse" | sudo tee /etc/apt/sources.list.d/ubuntu-updates.list
-              echo "deb [arch=amd64,${{ matrix.architecture.linux_name }}] http://azure.archive.ubuntu.com/ubuntu/ $(lsb_release -sc)-security main restricted universe multiverse" | sudo tee /etc/apt/sources.list.d/ubuntu-security.list          
+              echo "deb [arch=amd64,${{ matrix.architecture.linux_name }}] http://azure.archive.ubuntu.com/ubuntu/ noble main restricted universe multiverse" | sudo tee /etc/apt/sources.list.d/ubuntu.list
+              echo "deb [arch=amd64,${{ matrix.architecture.linux_name }}] http://azure.archive.ubuntu.com/ubuntu/ noble-updates main restricted universe multiverse" | sudo tee /etc/apt/sources.list.d/ubuntu-updates.list
+              echo "deb [arch=amd64,${{ matrix.architecture.linux_name }}] http://azure.archive.ubuntu.com/ubuntu/ noble-security main restricted universe multiverse" | sudo tee /etc/apt/sources.list.d/ubuntu-security.list          
           else
-              echo "deb [arch=amd64] http://azure.archive.ubuntu.com/ubuntu/ $(lsb_release -sc) main restricted universe multiverse" | sudo tee /etc/apt/sources.list.d/ubuntu.list
-              echo "deb [arch=amd64] http://azure.archive.ubuntu.com/ubuntu/ $(lsb_release -sc)-updates main restricted universe multiverse" | sudo tee /etc/apt/sources.list.d/ubuntu-updates.list
-              echo "deb [arch=amd64] http://azure.archive.ubuntu.com/ubuntu/ $(lsb_release -sc)-security main restricted universe multiverse" | sudo tee /etc/apt/sources.list.d/ubuntu-security.list
+              echo "deb [arch=amd64] http://azure.archive.ubuntu.com/ubuntu/ noble main restricted universe multiverse" | sudo tee /etc/apt/sources.list.d/ubuntu.list
+              echo "deb [arch=amd64] http://azure.archive.ubuntu.com/ubuntu/ noble-updates main restricted universe multiverse" | sudo tee /etc/apt/sources.list.d/ubuntu-updates.list
+              echo "deb [arch=amd64] http://azure.archive.ubuntu.com/ubuntu/ noble-security main restricted universe multiverse" | sudo tee /etc/apt/sources.list.d/ubuntu-security.list
           fi
           if [[ ${{ matrix.architecture.is_ports}} == true ]]; then
-              echo "deb [arch=${{ matrix.architecture.linux_name  }}] http://azure.ports.ubuntu.com/ubuntu-ports/ $(lsb_release -sc) main restricted universe multiverse" | sudo tee /etc/apt/sources.list.d/ubuntu-ports.list
-              echo "deb [arch=${{ matrix.architecture.linux_name }}] http://azure.ports.ubuntu.com/ubuntu-ports/ $(lsb_release -sc)-updates main restricted universe multiverse" | sudo tee /etc/apt/sources.list.d/ubuntu-ports-updates.list
-              echo "deb [arch=${{ matrix.architecture.linux_name }}] http://azure.ports.ubuntu.com/ubuntu-ports/ $(lsb_release -sc)-security main restricted universe multiverse" | sudo tee /etc/apt/sources.list.d/ubuntu-ports-security.list
+              echo "deb [arch=${{ matrix.architecture.linux_name  }}] http://azure.ports.ubuntu.com/ubuntu-ports/ noble main restricted universe multiverse" | sudo tee /etc/apt/sources.list.d/ubuntu-ports.list
+              echo "deb [arch=${{ matrix.architecture.linux_name }}] http://azure.ports.ubuntu.com/ubuntu-ports/ noble-updates main restricted universe multiverse" | sudo tee /etc/apt/sources.list.d/ubuntu-ports-updates.list
+              echo "deb [arch=${{ matrix.architecture.linux_name }}] http://azure.ports.ubuntu.com/ubuntu-ports/ noble-security main restricted universe multiverse" | sudo tee /etc/apt/sources.list.d/ubuntu-ports-security.list
           fi
           
           sudo apt-get update -y
@@ -322,6 +326,10 @@ jobs:
           sudo apt-get download bash:${{ matrix.architecture.linux_name }}
           sudo mkdir -p bashdata && sudo ar x bash_*.deb --output=bashdata
           sudo tar xf bashdata/data.tar.* -C bashdata
+          sudo ls bashdata
+          sudo ls bashdata/usr
+          sudo ls bashdata/usr/bin
+          sudo ls bashdata/bin
           sudo mv bashdata/bin/bash /opt/bash
           sudo rm -r bash_*.deb bashdata
 
@@ -338,6 +346,8 @@ jobs:
         with:
           name: Linux-${{ matrix.architecture.name }}-Build-JDK${{ matrix.java_version }}
           path: .
+          run-id: 930864928
+          github-token: ${{ secrets.GH_TOKEN }}
 
       - name: Test
         run: |
