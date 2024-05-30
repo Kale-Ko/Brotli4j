@@ -85,12 +85,17 @@ public class Brotli4jLoader {
                     // Copy the native library to a temporary file and load it
                     try (InputStream in = loaderClassToUse.getResourceAsStream(libPath)) {
 
+                        System.out.println(in);
+
                         // If the library is not found, throw an exception.
                         if (in == null) {
                             throw new UnsatisfiedLinkError("Failed to open Brotli native library: " + libPath);
                         }
 
                         Files.copy(in, tempFile, StandardCopyOption.REPLACE_EXISTING);
+
+                        System.out.println(tempFile);
+                        System.out.println(Files.exists(tempFile));
 
                         System.load(tempFile.toString());
                     }
