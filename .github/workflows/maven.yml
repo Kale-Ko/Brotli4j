@@ -10,7 +10,6 @@ on:
 
 jobs:
   Linux-Build:
-    if: false
     strategy:
       fail-fast: true
       matrix:
@@ -70,7 +69,6 @@ jobs:
           compression-level: 9
 
   Windows-Build:
-    if: false
     strategy:
       fail-fast: true
       matrix:
@@ -116,7 +114,6 @@ jobs:
           compression-level: 9
 
   OSX-Build:
-    if: false
     strategy:
       fail-fast: true
       matrix:
@@ -377,7 +374,7 @@ jobs:
               name: aarch64
               java_distro: 'liberica'
             java_version: 8
-#    needs: Windows-Build
+    needs: Windows-Build
 
     name: Windows-${{ matrix.architecture.name }}-Test-JDK${{ matrix.java_version }}
     runs-on: ${{ matrix.architecture.runs_on }}
@@ -396,8 +393,6 @@ jobs:
         with:
           name: Windows-${{ matrix.architecture.name }}-Build-JDK${{ matrix.java_version }}
           path: .
-          run-id: 9326996360
-          github-token: ${{ secrets.GH_TOKEN }}
 
       - name: Test
         run: |
