@@ -51,20 +51,20 @@ public class Brotli4jLoader {
                 try {
                     String nativeLibName = System.mapLibraryName("brotli");
 
-                    System.out.println(nativeLibName);
-
                     Path tempDir = Files.createTempDirectory( "com_aayushatharva_brotli4j_").toAbsolutePath();
                     tempDir.toFile().deleteOnExit();
 
                     Path tempFile = tempDir.resolve(nativeLibName);
 
-                    System.out.println(tempFile);
+                    System.out.println(System.getProperty("os.name"));
+                    System.out.println(System.getProperty("os.arch"));
 
                     String platform = null;
                     Class<?> loaderClassToUse = Brotli4jLoader.class; // Use this as a fallback for non-JPMS contexts
                     // In Java9+ with JPMS enabled, we need a class in the jar that contains the file to be able to access its content
                     ServiceLoader<BrotliNativeProvider> nativeProviders = ServiceLoader.load(BrotliNativeProvider.class, Brotli4jLoader.class.getClassLoader());
                     for (BrotliNativeProvider nativeProvider : nativeProviders) {
+                        System.out.println(nativeProvider.platformName() + ": " + nativeProvider.isCurrentPlatform());
                         if (nativeProvider.isCurrentPlatform()) {
                             platform = nativeProvider.platformName();
                             loaderClassToUse = nativeProvider.getClass();
