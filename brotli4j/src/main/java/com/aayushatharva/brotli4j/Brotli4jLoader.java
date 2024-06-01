@@ -56,15 +56,11 @@ public class Brotli4jLoader {
 
                     Path tempFile = tempDir.resolve(nativeLibName);
 
-                    System.out.println(System.getProperty("os.name"));
-                    System.out.println(System.getProperty("os.arch"));
-
                     String platform = null;
                     Class<?> loaderClassToUse = Brotli4jLoader.class; // Use this as a fallback for non-JPMS contexts
                     // In Java9+ with JPMS enabled, we need a class in the jar that contains the file to be able to access its content
                     ServiceLoader<BrotliNativeProvider> nativeProviders = ServiceLoader.load(BrotliNativeProvider.class, Brotli4jLoader.class.getClassLoader());
                     for (BrotliNativeProvider nativeProvider : nativeProviders) {
-                        System.out.println(nativeProvider.platformName() + ": " + nativeProvider.isCurrentPlatform());
                         if (nativeProvider.isCurrentPlatform()) {
                             platform = nativeProvider.platformName();
                             loaderClassToUse = nativeProvider.getClass();
@@ -72,20 +68,14 @@ public class Brotli4jLoader {
                         }
                     }
 
-                    System.out.println(platform);
-
                     if (platform == null) {
                         throw new UnsatisfiedLinkError("Failed to find valid Brotli native library in classpath.");
                     }
 
                     String libPath = "/lib/" + platform + "/" + nativeLibName;
 
-                    System.out.println(libPath);
-
                     // Copy the native library to a temporary file and load it
                     try (InputStream in = loaderClassToUse.getResourceAsStream(libPath)) {
-
-                        System.out.println(in);
 
                         // If the library is not found, throw an exception.
                         if (in == null) {
@@ -94,14 +84,9 @@ public class Brotli4jLoader {
 
                         Files.copy(in, tempFile, StandardCopyOption.REPLACE_EXISTING);
 
-                        System.out.println(tempFile);
-                        System.out.println(Files.exists(tempFile));
-
                         System.load(tempFile.toString());
                     }
                 } catch (Throwable throwable) {
-                    System.out.println(throwable);
-
                     cause = throwable;
                 }
             }
