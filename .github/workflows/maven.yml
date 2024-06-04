@@ -1,9 +1,9 @@
-name: Java CI with Maven
+name: Build
 
 on:
   push:
     branches:
-      - main
+      - "*"
   pull_request:
 
   workflow_dispatch:
@@ -295,6 +295,8 @@ jobs:
 
     steps:
       - name: Setup QEMU
+        env:
+          NEEDRESTART_SUSPEND: true
         run: |
           sudo dpkg --add-architecture ${{ matrix.architecture.linux_name }}
           sudo rm -f /etc/apt/sources.list /etc/apt/sources.list.d/ubuntu.sources
@@ -316,21 +318,9 @@ jobs:
           sudo apt-get update -y
           sudo apt-get --fix-broken install
           
-          sudo NEEDRESTART_SUSPEND=true apt-get install -y qemu-system-${{ matrix.architecture.qemu_package_name }} qemu-user qemu-utils \
-                  libc6:amd64 libc6:${{ matrix.architecture.linux_name }} libstdc++6:amd64 libstdc++6:${{ matrix.architecture.linux_name }} libtinfo6:amd64 libtinfo6:${{ matrix.architecture.linux_name }} \
-                  libatomic1:amd64 libatomic1:${{ matrix.architecture.linux_name }} zlib1g:amd64 zlib1g:${{ matrix.architecture.linux_name }}
+          sudo apt-get install -y qemu-system-${{ matrix.architecture.qemu_package_name }}
           
-          cd /opt
-          sudo apt-get download bash:${{ matrix.architecture.linux_name }}
-          sudo mkdir -p bashdata
-          sudo ar x bash_*.deb --output=bashdata
-          sudo tar xf bashdata/data.tar.* -C bashdata
-          if [[ -f bashdata/usr/bin/bash ]]; then
-              sudo mv bashdata/usr/bin/bash /opt/bash
-          elif [[ -f bashdata/bin/bash ]]; then
-              sudo mv bashdata/bin/bash /opt/bash          
-          fi
-          sudo rm -r bash_*.deb bashdata
+          sudo docker run 
 
       - name: Setup JDK
         uses: actions/setup-java@v4
