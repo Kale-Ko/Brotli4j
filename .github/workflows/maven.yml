@@ -11,7 +11,7 @@ on:
 jobs:
   Linux-Build:
     strategy:
-      fail-fast: true
+      fail-fast: false
       matrix:
         architecture:
           - name: x86_64
