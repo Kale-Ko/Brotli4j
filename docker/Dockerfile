@@ -1,0 +1,5 @@
+ARG BUILD_IMAGE
+FROM $BUILD_IMAGE
+
+ENTRYPOINT [ ]
+CMD [ "/bin/bash" ]

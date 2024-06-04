@@ -348,7 +348,9 @@ jobs:
 
       - name: Test
         run: |
-          qemu-${{ matrix.architecture.qemu_name }} /opt/bash -c "mvn -B -V -ntp --file pom.xml -P release test"
+          docker build docker/ --tag localbuild --platform ${{ matrix.architecture.docker_name }} --build-arg BUILD_IMAGE="ubuntu:${{ matrix.architecture.ubuntu_version }}"
+          docker run localbuild --platform ${{ matrix.architecture.docker_name }} \
+            mvn -B -V -ntp --file pom.xml -P release test
 
   Windows-Test:
     strategy:
