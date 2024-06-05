@@ -7,6 +7,12 @@ on:
   pull_request:
 
   workflow_dispatch:
+    inputs:
+      keep_intermediate_builds:
+        description: Keep intermediate builds
+        required: false
+        type: boolean
+        default: false
 
 jobs:
   Linux-Build:
@@ -67,7 +73,7 @@ jobs:
         run: |
           docker build \
                   --platform linux/amd64 \
-                  --build-arg "UBUNTU_VERSION=${{ matrix.architecture.ubuntu_version }}" \
+                  --build-arg "UBUNTU_IMAGE=amd64/ubuntu:${{ matrix.architecture.ubuntu_version }}" \
                   --build-arg "JAVA_VERSION=${{ matrix.java_version }}" \
                   --build-arg "TARGET_GCC_PACKAGE=${{ matrix.architecture.gcc_package_name }}" \
                   --build-arg "TARGET_GCC_EXEC=${{ matrix.architecture.gcc_exec_name }}" \
@@ -191,7 +197,8 @@ jobs:
       matrix:
         java_version: [ 8, 11, 17, 21 ]
 
-    needs: [ Linux-Build, Windows-Build, OSX-Build ]
+    needs: [ Linux-Build, Windows-Build, OSX-Build, Linux-Test, Windows-Test, OSX-Test ]
+    if: ${{ always() && !cancelled() }}
 
     name: Complete-Build-JDK${{ matrix.java_version }}
     runs-on: ubuntu-latest
@@ -216,7 +223,7 @@ jobs:
         run: |
           docker build \
                   --platform linux/amd64 \
-                  --build-arg "UBUNTU_VERSION=18.04" \
+                  --build-arg "UBUNTU_IMAGE=amd64/ubuntu:18.04" \
                   --build-arg "JAVA_VERSION=${{ matrix.java_version }}" \
                   --tag linux-buildimage:complete \
                   docker/completebuild/
@@ -259,6 +266,13 @@ jobs:
                   linux-buildimage:complete \
                       ./mvnw -B -V -ntp -P "release" "-Dmaven.test.skip=true" package
 
+      - name: Remove intermediate builds
+        if: ${{ !(inputs.keep_intermediate_builds == true) }}
+        continue-on-error: true
+        uses: geekyeggo/delete-artifact@v5
+        with:
+          name: '*-JDK${{ matrix.java_version }}'
+
       - name: Upload build
         uses: actions/upload-artifact@v4
         with:
@@ -272,37 +286,44 @@ jobs:
       matrix:
         architecture:
           - name: x86_64
-            ubuntu_version: ubuntu-18.04
+            ubuntu_version: 18.04
+            ubuntu_docker_arch: amd64
             java_distro: 'temurin'
             java_name: x64
             docker_name: linux/amd64
           - name: x86
-            ubuntu_version: ubuntu-18.04
+            ubuntu_version: 18.04
+            ubuntu_docker_arch: i386
             java_distro: 'liberica'
             java_name: x86
             docker_name: linux/i386
           - name: aarch64
-            ubuntu_version: ubuntu-18.04
+            ubuntu_version: 18.04
+            ubuntu_docker_arch: arm64v8
             java_distro: 'temurin'
             java_name: aarch64
             docker_name: linux/aarch64
           - name: armv7
-            ubuntu_version: ubuntu-18.04
+            ubuntu_version: 18.04
+            ubuntu_docker_arch: arm32v7
             java_distro: 'temurin'
             java_name: arm
             docker_name: linux/arm/v7
           - name: ppc64le
-            ubuntu_version: ubuntu-18.04
+            ubuntu_version: 18.04
+            ubuntu_docker_arch: ppc64le
             java_distro: 'temurin'
             java_name: ppc64le
-            docker_name: linux/ppc64el
+            docker_name: linux/ppc64le
           - name: riscv64
-            ubuntu_version: ubuntu-20.04
+            ubuntu_version: 20.04
+            ubuntu_docker_arch: riscv64
             java_distro: 'temurin'
             java_name: riscv64
             docker_name: linux/riscv64
           - name: s390x
-            ubuntu_version: ubuntu-18.04
+            ubuntu_version: 18.04
+            ubuntu_docker_arch: s390x
             java_distro: 'temurin'
             java_name: s390x
             docker_name: linux/s390x
@@ -336,40 +357,39 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Setup QEMU
-        uses: docker/setup-qemu-action@v3
-        with:
-          platforms: ${{ matrix.architecture.docker_name }}
-
       - name: Pre Setup JDK
         run: |
           sudo rm -rf /opt/hostedtoolcache/Java_*/*
 
       - name: Setup JDK
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           distribution: ${{ matrix.architecture.java_distro }}
           java-version: ${{ matrix.java_version }}
           architecture: ${{ matrix.architecture.java_name }}
           check-latest: true
 
+      - name: Download build
+        uses: actions/download-artifact@v4
+        with:
+          name: Linux-${{ matrix.architecture.name }}-Build-JDK${{ matrix.java_version }}
+          path: .
+
+      - name: Setup QEMU
+        uses: docker/setup-qemu-action@v3
+        with:
+          platforms: ${{ matrix.architecture.docker_name }}
+
       - name: Setup Docker
         run: |
           docker build \
                   --platform ${{ matrix.architecture.docker_name }} \
-                  --build-arg "UBUNTU_VERSION=${{ matrix.architecture.ubuntu_version }}" \
+                  --build-arg "UBUNTU_IMAGE=${{ matrix.architecture.ubuntu_docker_arch }}/ubuntu:${{ matrix.architecture.ubuntu_version }}" \
                   --build-arg "JAVA_VERSION=${{ matrix.java_version }}" \
                   --build-arg "TARGET_GCC_PACKAGE=${{ matrix.architecture.gcc_package_name }}" \
                   --build-arg "TARGET_GCC_EXEC=${{ matrix.architecture.gcc_exec_name }}" \
                   --tag linux-testimage:${{ matrix.architecture.name }} \
                   docker/test/
-
-      - name: Download build
-        uses: actions/download-artifact@v3
-        with:
-          name: Linux-${{ matrix.architecture.name }}-Build-JDK${{ matrix.java_version }}
-          path: .
-
 
       - name: Test
         run: |
@@ -398,10 +418,6 @@ jobs:
             runs_on: windows-2022
             java_distro: 'temurin'
             java_name: x86
-          - name: aarch64
-            runs_on: self-hosted
-            java_distro: 'liberica'
-            java_name: aarch64
         java_version: [ 8, 11, 17, 21 ]
 
         exclude:
