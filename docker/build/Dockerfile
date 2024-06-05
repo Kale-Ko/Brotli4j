@@ -6,7 +6,9 @@ ARG TARGET_GCC_PACKAGE
 ARG TARGET_GCC_EXEC
 
 RUN apt-get update -y && \
-    apt-get install -y make cmake ${TARGET_GCC_PACKAGE} && \
+    apt-get install -y \
+        make cmake ${TARGET_GCC_PACKAGE} \
+        libc6 libstdc++6 libatomic1 zlib1g && \
     apt-get clean
 
 RUN update-alternatives --install /usr/bin/cc cc /usr/bin/${TARGET_GCC_EXEC}-gcc 999 && \

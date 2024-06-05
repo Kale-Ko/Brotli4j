@@ -41,7 +41,7 @@ jobs:
             gcc_package_name: "gcc-powerpc64le-linux-gnu g++-powerpc64le-linux-gnu"
             gcc_exec_name: "powerpc64le-linux-gnu"
           - name: riscv64
-            ubuntu_version: 20.04
+            ubuntu_version: 18.04
             gcc_package_name: "gcc-riscv64-linux-gnu g++-riscv64-linux-gnu"
             gcc_exec_name: "riscv64-linux-gnu"
           - name: s390x
@@ -228,14 +228,14 @@ jobs:
                   --tag linux-buildimage:complete \
                   docker/completebuild/
 
-      - name: Download builds
+      - name: Download intermediate builds
         uses: actions/download-artifact@v4
         with:
           pattern: "*-JDK${{ matrix.java_version }}"
           path: builds/
           merge-multiple: false
 
-      - name: Copy builds
+      - name: Merge intermediate builds
         run: |
           OUT=$PWD
           rootPaths=($(find ./builds/*/natives/ -type d -name "target" | grep -oiP '(.*)\/([^-]*-[^-]*)-Build-JDK([0-9]*)(?=\/natives\/\2\/target)'))
@@ -291,12 +291,6 @@ jobs:
             java_distro: 'temurin'
             java_name: x64
             docker_name: linux/amd64
-          - name: x86
-            ubuntu_version: 18.04
-            ubuntu_docker_arch: i386
-            java_distro: 'liberica'
-            java_name: x86
-            docker_name: linux/i386
           - name: aarch64
             ubuntu_version: 18.04
             ubuntu_docker_arch: arm64v8
