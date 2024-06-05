@@ -11,7 +11,7 @@ on:
 jobs:
   Linux-Build:
     strategy:
-      fail-fast: false
+      fail-fast: true
       matrix:
         architecture:
           - name: x86_64
@@ -51,6 +51,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Pre Setup JDK
+        run: |
+          sudo rm -rf /opt/hostedtoolcache/Java_*/*
+
       - name: Setup JDK
         uses: actions/setup-java@v4
         with:
@@ -75,6 +79,7 @@ jobs:
           export MAVEN_HOME=$(dirname $(dirname $(which mvn)))
 
           docker run \
+                  --platform linux/amd64 \
                   --volume "$PWD:/data" \
                   --volume "$JAVA_HOME:/opt/java" \
                   --volume "$MAVEN_HOME:/opt/maven" \
@@ -109,6 +114,10 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Pre Setup JDK
+        run: |
+          Remove-Item -Recurse -Force -Path C:\hostedtoolcache\windows\Java_*\*
 
       - name: Setup JDK
         uses: actions/setup-java@v4
@@ -150,6 +159,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Pre Setup JDK
+        run: |
+          sudo rm -rf /Users/runner/hostedtoolcache/Java_*/*
+
       - name: Setup JDK
         uses: actions/setup-java@v4
         with:
@@ -184,6 +197,10 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Pre Setup JDK
+        run: |
+          sudo rm -rf /opt/hostedtoolcache/Java_*/*
 
       - name: Setup JDK
         uses: actions/setup-java@v4
@@ -349,6 +366,10 @@ jobs:
           
           sudo docker run 
 
+      - name: Pre Setup JDK
+        run: |
+          sudo rm -rf /opt/hostedtoolcache/Java_*/*
+
       - name: Setup JDK
         uses: actions/setup-java@v3
         with:
@@ -404,6 +425,10 @@ jobs:
     runs-on: ${{ matrix.architecture.runs_on }}
 
     steps:
+      - name: Pre Setup JDK
+        run: |
+          Remove-Item -Recurse -Force -Path C:\hostedtoolcache\windows\Java_*\*
+
       - name: Setup JDK
         uses: actions/setup-java@v4
         with:
@@ -457,6 +482,10 @@ jobs:
     runs-on: ${{ matrix.architecture.runs_on }}
 
     steps:
+      - name: Pre Setup JDK
+        run: |
+          sudo rm -rf /Users/runner/hostedtoolcache/Java_*/*
+
       - name: Setup JDK
         uses: actions/setup-java@v4
         with:
