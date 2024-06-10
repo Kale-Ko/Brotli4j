@@ -5,6 +5,9 @@ USER root
 ARG TARGET_GCC_PACKAGE
 ARG TARGET_GCC_EXEC
 
+COPY setup-repo.sh /setup-repo.sh
+RUN /setup-repo.sh
+
 RUN yum update -y && \
     yum install -y \
         "make" "cmake" ${TARGET_GCC_PACKAGE} \
