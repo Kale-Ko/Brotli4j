@@ -8,6 +8,11 @@ on:
 
   workflow_dispatch:
     inputs:
+      run_all_builds:
+        description: Run extra builds on different ubuntu versions
+        required: false
+        type: boolean
+        default: false
       keep_intermediate_builds:
         description: Keep intermediate builds
         required: false
@@ -286,22 +291,22 @@ jobs:
       matrix:
         architecture:
           - name: x86_64
-            ubuntu_version: 18.04
             ubuntu_docker_arch: amd64
             java_distro: 'temurin'
             java_name: x64
             docker_name: linux/amd64
           - name: aarch64
-            ubuntu_version: 18.04
             ubuntu_docker_arch: arm64v8
             java_distro: 'temurin'
             java_name: aarch64
             docker_name: linux/aarch64
+        ubuntu_version: [ 16.04, 18.04, 20.04, 22.04, 24.04 ]
         java_version: [ 8, 11, 17, 21 ]
 
     needs: [ Linux-Build ]
+    if: ${{ !(inputs.run_all_builds == true) }}
 
-    name: Linux-${{ matrix.architecture.name }}-Test-JDK${{ matrix.java_version }}-Docker
+    name: Linux-${{ matrix.architecture.name }}-Test-JDK${{ matrix.java_version }}-Docker-Ubuntu_${{ matrix.ubuntu_version }}
     runs-on: ubuntu-latest
 
     steps:
@@ -332,7 +337,7 @@ jobs:
         run: |
           docker build \
               --platform ${{ matrix.architecture.docker_name }} \
-              --build-arg "DOCKER_IMAGE=${{ matrix.architecture.ubuntu_docker_arch }}/ubuntu:${{ matrix.architecture.ubuntu_version }}" \
+              --build-arg "DOCKER_IMAGE=${{ matrix.architecture.ubuntu_docker_arch }}/ubuntu:${{ matrix.ubuntu_version }}" \
               --build-arg "JAVA_VERSION=${{ matrix.java_version }}" \
               --build-arg "TARGET_GCC_PACKAGE=${{ matrix.architecture.gcc_package_name }}" \
               --build-arg "TARGET_GCC_EXEC=${{ matrix.architecture.gcc_exec_name }}" \
