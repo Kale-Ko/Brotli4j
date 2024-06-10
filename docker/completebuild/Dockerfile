@@ -9,11 +9,7 @@ RUN apt-get update -y && \
 
 VOLUME "/opt/java"
 ENV JAVA_HOME="/opt/java"
-ENV PATH="$JAVA_HOME:$PATH"
-
-VOLUME "/opt/maven"
-ENV MAVEN_HOME="/opt/maven"
-ENV PATH="$MAVEN_HOME:$PATH"
+ENV PATH="$PATH:$JAVA_HOME/bin"
 
 VOLUME "/data"
 WORKDIR "/data"

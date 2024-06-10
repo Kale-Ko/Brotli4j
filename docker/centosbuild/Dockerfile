@@ -10,19 +10,24 @@ RUN /setup-repo.sh
 
 RUN yum update -y && \
     yum install -y \
-        "make" "cmake" ${TARGET_GCC_PACKAGE} \
+        "make" ${TARGET_GCC_PACKAGE} \
         "glibc" "libstdc++"
 
 RUN update-alternatives --install /usr/bin/cc cc /usr/bin/${TARGET_GCC_EXEC}-gcc 999 && \
     update-alternatives --install /usr/bin/c++ c++ /usr/bin/${TARGET_GCC_EXEC}-g++ 999
 
+ARG CMAKE_VERSION="3.10.2"
+
+RUN curl -L https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}-linux-x86_64.tar.gz -o cmake.tar.gz && \
+    mkdir /opt/cmake && \
+    tar -xzf cmake.tar.gz -C /opt/cmake --strip-components 1 && \
+    rm cmake.tar.gz
+
+ENV PATH="$PATH:/opt/cmake/bin"
+
 VOLUME "/opt/java"
 ENV JAVA_HOME="/opt/java"
-ENV PATH="$JAVA_HOME:$PATH"
-
-VOLUME "/opt/maven"
-ENV MAVEN_HOME="/opt/maven"
-ENV PATH="$MAVEN_HOME:$PATH"
+ENV PATH="$PATH:$JAVA_HOME/bin"
 
 VOLUME "/data"
 WORKDIR "/data"

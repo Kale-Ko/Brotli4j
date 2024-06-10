@@ -69,7 +69,7 @@ jobs:
       - name: Setup JDK
         uses: actions/setup-java@v4
         with:
-          distribution: 'temurin'
+          distribution: 'corretto'
           java-version: ${{ matrix.java_version }}
           architecture: 'x64'
           check-latest: true
@@ -80,7 +80,6 @@ jobs:
           docker build \
               --platform linux/amd64 \
               --build-arg "DOCKER_IMAGE=amd64/ubuntu:${{ matrix.architecture.ubuntu_version }}" \
-              --build-arg "JAVA_VERSION=${{ matrix.java_version }}" \
               --build-arg "TARGET_GCC_PACKAGE=${{ matrix.architecture.gcc_package_name }}" \
               --build-arg "TARGET_GCC_EXEC=${{ matrix.architecture.gcc_exec_name }}" \
               --tag linux-buildimage:${{ matrix.architecture.name }} \
@@ -92,7 +91,6 @@ jobs:
           docker build \
               --platform linux/amd64 \
               --build-arg "DOCKER_IMAGE=amd64/centos:${{ matrix.architecture.centos_version }}" \
-              --build-arg "JAVA_VERSION=${{ matrix.java_version }}" \
               --build-arg "TARGET_GCC_PACKAGE=${{ matrix.architecture.gcc_package_name }}" \
               --build-arg "TARGET_GCC_EXEC=${{ matrix.architecture.gcc_exec_name }}" \
               --tag linux-buildimage:${{ matrix.architecture.name }} \
@@ -100,14 +98,11 @@ jobs:
 
       - name: Build
         run: |
-          export MAVEN_HOME=$(dirname $(dirname $(which mvn)))
-
           chmod +x ./mvnw ./mvnw.cmd
           docker run \
               --platform linux/amd64 \
               --volume "$PWD:/data" \
               --volume "$JAVA_HOME:/opt/java" \
-              --volume "$MAVEN_HOME:/opt/maven" \
               linux-buildimage:${{ matrix.architecture.name }} \
                   ./mvnw -B -V -ntp -P "linux-${{ matrix.architecture.name }}" "-Dmaven.test.skip=true" clean package
 
@@ -119,6 +114,7 @@ jobs:
           compression-level: 9
 
   Windows-Build:
+    if: false
     strategy:
       fail-fast: true
       matrix:
@@ -169,6 +165,7 @@ jobs:
           compression-level: 9
 
   OSX-Build:
+    if: false
     strategy:
       fail-fast: true
       matrix:
@@ -258,14 +255,11 @@ jobs:
 
       - name: Build
         run: |
-          export MAVEN_HOME=$(dirname $(dirname $(which mvn)))
-
           chmod +x ./mvnw ./mvnw.cmd
           docker run \
               --platform linux/amd64 \
               --volume "$PWD:/data" \
               --volume "$JAVA_HOME:/opt/java" \
-              --volume "$MAVEN_HOME:/opt/maven" \
               linux-buildimage:complete \
                   ./mvnw -B -V -ntp -P "release" "-Dmaven.test.skip=true" package
 
@@ -341,14 +335,11 @@ jobs:
 
       - name: Test
         run: |
-          export MAVEN_HOME=$(dirname $(dirname $(which mvn)))
-
           chmod +x ./mvnw ./mvnw.cmd
           docker run \
               --platform ${{ matrix.architecture.docker_name }} \
               --volume "$PWD:/data" \
               --volume "$JAVA_HOME:/opt/java" \
-              --volume "$MAVEN_HOME:/opt/maven" \
               linux-testimage:${{ matrix.architecture.name }} \
                   ./mvnw -B -V -ntp -P "release" test
 

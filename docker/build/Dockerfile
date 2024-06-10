@@ -16,11 +16,7 @@ RUN update-alternatives --install /usr/bin/cc cc /usr/bin/${TARGET_GCC_EXEC}-gcc
 
 VOLUME "/opt/java"
 ENV JAVA_HOME="/opt/java"
-ENV PATH="$JAVA_HOME:$PATH"
-
-VOLUME "/opt/maven"
-ENV MAVEN_HOME="/opt/maven"
-ENV PATH="$MAVEN_HOME:$PATH"
+ENV PATH="$PATH:$JAVA_HOME/bin"
 
 VOLUME "/data"
 WORKDIR "/data"
