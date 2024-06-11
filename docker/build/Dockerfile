@@ -14,9 +14,9 @@ RUN apt-get update -y && \
 RUN update-alternatives --install /usr/bin/cc cc /usr/bin/${TARGET_GCC_EXEC}-gcc 999 && \
     update-alternatives --install /usr/bin/c++ c++ /usr/bin/${TARGET_GCC_EXEC}-g++ 999
 
-VOLUME "/opt/java"
-ENV JAVA_HOME="/opt/java"
-ENV PATH="$PATH:$JAVA_HOME/bin"
+VOLUME "/opt/java/"
+ENV JAVA_HOME "/opt/java/"
+ENV PATH "$PATH:$JAVA_HOME/bin/"
 
 VOLUME "/data"
 WORKDIR "/data"
